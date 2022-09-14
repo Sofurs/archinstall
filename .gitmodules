@@ -1,0 +1,6 @@
+[submodule "dotfiles"]
+	path = dotfiles
+	url = https://github.com/Sofurs/dotfiles.git
+[submodule "system_config"]
+	path = system_config
+	url = https://github.com/Sofurs/system_config.git
