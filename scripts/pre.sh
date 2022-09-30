@@ -18,7 +18,7 @@ sed -i 's/#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 pacman -Sy
 pacman -S --needed --noconfirm dos2unix
 
-find "$script_dir/post_installation/config/"{openswap,udev,xorg} -type f -exec dos2unix {} \;
+find "$system_dir/etc/"{initcpio,udev,X11} -type f -exec dos2unix {} \;
 
 # partition disks
 sgdisk -Z ${disk}
