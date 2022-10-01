@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 reflector --protocol https --latest 10 --save /etc/pacman.d/mirrorlist
 sed -i 's/#ParallelDownloads/ParallelDownloads/' /etc/pacman.conf
 sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
@@ -26,8 +25,8 @@ if [ "$encryption" = true ]; then
     sed -i '/^HOOKS/s/filesystems //' /etc/mkinitcpio.conf
     sed -i '/^HOOKS/s/)/ keymap encrypt openswap resume filesystems)/' /etc/mkinitcpio.conf
 
-    envsubst '${part2}' < $system_dir/openswap/openswap_hook > /etc/initcpio/hooks/openswap
-    envsubst < $system_dir/openswap/openswap_install > /etc/initcpio/install/openswap
+    envsubst '${part2}' < $system_dir/etc/initcpio/hooks/openswap > /etc/initcpio/hooks/openswap
+    envsubst < $system_dir/etc/initcpio/install/openswap > /etc/initcpio/install/openswap
 fi
 
 mkinitcpio -P
@@ -77,7 +76,7 @@ pacman -S --needed --noconfirm remmina libvncserver spice-gtk freerdp
 pacman -S --needed --noconfirm vlc mpv ffmpeg obs-studio mpc
 pacman -S --needed --noconfirm font-manager terminus-font ttf-dejavu ttf-droid ttf-fira-mono ttf-fira-code ttf-opensans ttf-joypixels ttf-ubuntu-font-family papirus-icon-theme
 pacman -S --needed --noconfirm okular zathura zathura-pdf-poppler mupdf simple-scan xsane
-pacman -S libvirt iptables-nft dnsmasq dmidecode bridge-utils openbsd-netcat gnome-boxes virt-manager virt-viewer
+pacman -S --needed --noconfirm libvirt iptables-nft dnsmasq dmidecode bridge-utils openbsd-netcat gnome-boxes virt-manager virt-viewer
 
 pacman -S --needed --noconfirm flac wavpack a522dec libmad lame opus opencore-amr speex libmpcdec
 pacman -S --needed --noconfirm dav1d rav1e libdv x265 x264 libmpeg2 xvidcore libtheora libvpx
@@ -135,7 +134,7 @@ echo "${username} ALL=(ALL:ALL) NOPASSWD: $(which pacman)" >> /etc/sudoers
     yay -S --needed --noconfirm brave-bin spotify neovim-nightly-bin sublime-text-4
     yay -S --needed --noconfirm hfsprogs apfsprogs-git
     yay -S --needed --noconfirm nerd-fonts-mononoki betterlockscreen
-    yay -S --needed --noconfirm orchis-theme material-cursors-git
+    yay -S --needed --noconfirm orchis-theme
     yay -S --needed --noconfirm symfony-cli
     "
 )
@@ -145,17 +144,18 @@ systemctl enable "betterlockscreen@${username}"
 
 # Setup Interface
 ( su -l "${username}" -c "
-    mkdir -p "~/.local/"
+    mkdir -p "~/.local/bin"
+    mkdir -p "~/.local/share"
 
-    git clone https://github.com/Sofurs/dwm.git ~/.local/dwm
-    git clone https://github.com/Sofurs/dwmblocks-async.git ~/.local/dwmblocks-async
+    git clone https://github.com/Sofurs/dwm.git ~/.local/share/dwm
+    git clone https://github.com/Sofurs/dwmblocks-async.git ~/.local/share/dwmblocks-async
 
-    make -C ~/.local/dwm
-    make -C ~/.local/dwmblocks-async
+    make -C ~/.local/share/dwm
+    make -C ~/.local/share/dwmblocks-async
 ")
 
-make -C ~/.local/dwm install
-make -C ~/.local/dwmblocks-async install
+make -C /home/${username}/.local/dwm install
+make -C /home/${username}/.local/dwmblocks-async install
 
 # Setup Configs
 chsh -s $(which zsh) "${username}"
@@ -165,7 +165,7 @@ cp -r $system_dir/etc/udev/rules.d/* /etc/udev/rules.d/
 ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
 
 # xorg
-cp -r $system_dir/etc/xorg/* /etc/X11/xorg.conf.d/
+cp -r $system_dir/etc/X11/* /etc/X11/
 
 # bin
 chmod -R +x $system_dir/bin/*
@@ -178,10 +178,10 @@ cp -r $dotfile_dir/.wallpapers/ "/home/${username}/.wallpapers/"
 rm "/home/${username}/.bash"*
 
 cp -r $dotfile_dir/home/.* "/home/${username}"
-chown -R "${username}:${username}" "/home/${username}"
-
 cp -r $dotfile_dir/.config/ "/home/${username}/.config/"
 cp -r $dotfile_dir/.local/bin/ "/home/${username}/.local/"
+
+chown -R "${username}:${username}" "/home/${username}"
 
 curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
