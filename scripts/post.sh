@@ -63,7 +63,7 @@ cp "$system_dir/NetworkManager/dispatcher.d/"* /etc/NetworkManager/dispatcher.d/
 pacman -S --needed --noconfirm xorg xorg-server xorg-xinit picom gtk-2 gtk-3 
 pacman -S --needed --noconfirm man-db man-pages
 pacman -S --needed --noconfirm zsh alacritty putty
-pacman -S --needed --noconfirm mc ranger nautilus rofi
+pacman -S --needed --noconfirm mc ranger nautilus rofi trash-cli
 pacman -S --needed --noconfirm vi vim code
 pacman -S --needed --noconfirm lshw htop btop usbutils power-profiles-daemon
 pacman -S --needed --noconfirm fd ripgrep rsync wget
@@ -154,8 +154,8 @@ systemctl enable "betterlockscreen@${username}"
     make -C ~/.local/share/dwmblocks-async
 ")
 
-make -C /home/${username}/.local/dwm install
-make -C /home/${username}/.local/dwmblocks-async install
+make -C /home/${username}/.local/share/dwm install
+make -C /home/${username}/.local/share/dwmblocks-async install
 
 # Setup Configs
 chsh -s $(which zsh) "${username}"
